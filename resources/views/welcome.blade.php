@@ -75,7 +75,7 @@
                 <div class="relative overflow-hidden aspect-[3/4]">
                     @php
                         $defaultImage = 'assets/concert.png';
-                        $catName = strtolower($event->category->name);
+                        $catName = strtolower($event->category->name ?? 'uncategorized');
                         if (str_contains($catName, 'it') || str_contains($catName, 'teknologi') || str_contains($catName, 'design')) {
                             $defaultImage = 'assets/hackathon.png';
                         } elseif (str_contains($catName, 'seminar') || str_contains($catName, 'workshop')) {
@@ -87,7 +87,7 @@
                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     
                     <div class="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur rounded-lg text-xs font-bold uppercase text-indigo-600">
-                        {{ $event->category->name }}
+                        {{ $event->category->name ?? 'Uncategorized' }}
                     </div>
                 </div>
 
@@ -128,6 +128,42 @@
                 </div>
             </div>
         @endforelse
+    </div>
+</section>
+
+<!-- Partners & Platform Categorization Section -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-100">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+        <div class="lg:col-span-1">
+            <span class="px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-full font-bold text-xs uppercase tracking-widest">
+                Platform Categorization
+            </span>
+            <h2 class="text-3xl font-black text-slate-800 mt-4 tracking-tight leading-tight">
+                Di Bagian Manakah Platform <span class="text-indigo-600">AmikomEventHub</span>?
+            </h2>
+            <p class="mt-4 text-slate-500 font-medium leading-relaxed">
+                AmikomEventHub dikategorikan sebagai platform **Manajemen Event & Ticketing Digital Utama**. Kami menghubungkan komunitas kampus dengan ekosistem event yang luas, didukung oleh partner strategis terpercaya untuk menjamin kelancaran setiap acara.
+            </p>
+        </div>
+        
+        <div class="lg:col-span-2 bg-slate-50/50 rounded-3xl p-8 border border-slate-100/80">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">Partner Pendukung Kami</h3>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                @forelse($partners as $partner)
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition duration-300 flex flex-col items-center justify-center gap-3 group">
+                        <div class="h-12 flex items-center justify-center">
+                            <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}" class="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 transition duration-300">
+                        </div>
+                        <span class="text-xs font-bold text-slate-600 group-hover:text-indigo-600 transition">{{ $partner->name }}</span>
+                    </div>
+                @empty
+                    <div class="col-span-full py-8 text-center text-slate-400 italic text-sm">
+                        Belum ada partner yang terdaftar.
+                    </div>
+                @endforelse
+            </div>
+        </div>
     </div>
 </section>
 @endsection

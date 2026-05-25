@@ -27,9 +27,18 @@
     <!-- Tabel Daftar -->
     <div class="lg:col-span-2">
         <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="p-8 border-b">
-                <h3 class="font-black text-xl">Daftar Kategori</h3>
-                <p class="text-slate-500 text-sm font-medium">Total {{ $categories->total() }} kategori aktif</p>
+            <div class="p-8 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h3 class="font-black text-xl">Daftar Kategori</h3>
+                    <p class="text-slate-500 text-sm font-medium">Total {{ $categories->total() }} kategori aktif</p>
+                </div>
+                <form action="{{ route('admin.categories.index') }}" method="GET" class="relative w-full md:w-auto">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kategori..." 
+                           class="w-full md:w-48 border border-slate-200 pl-10 pr-4 py-2.5 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition text-sm">
+                    <div class="absolute left-3.5 top-3 text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </form>
             </div>
 
             <div class="overflow-x-auto">
@@ -37,8 +46,11 @@
                     <thead class="bg-slate-50 text-slate-400 uppercase text-[10px] font-black tracking-widest">
                         <tr>
                             <th class="px-8 py-4">No</th>
+                            <th class="px-8 py-4">ID</th>
                             <th class="px-8 py-4">Nama Kategori</th>
                             <th class="px-8 py-4">Slug</th>
+                            <th class="px-8 py-4">Dibuat Pada</th>
+                            <th class="px-8 py-4">Diperbarui Pada</th>
                             <th class="px-8 py-4 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -46,12 +58,15 @@
                         @forelse($categories as $category)
                         <tr class="hover:bg-slate-50/50 transition group">
                             <td class="px-8 py-6 font-medium text-slate-500">{{ $loop->iteration + ($categories->currentPage() - 1) * $categories->perPage() }}</td>
+                            <td class="px-8 py-6 text-slate-500 font-bold">#{{ $category->id }}</td>
                             <td class="px-8 py-6">
                                 <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg font-bold text-xs">
                                     {{ $category->name }}
                                 </span>
                             </td>
                             <td class="px-8 py-6 text-slate-400 text-sm">{{ $category->slug }}</td>
+                            <td class="px-8 py-6 text-slate-500 text-sm">{{ $category->created_at->format('d-m-Y H:i') }}</td>
+                            <td class="px-8 py-6 text-slate-500 text-sm">{{ $category->updated_at->format('d-m-Y H:i') }}</td>
                             <td class="px-8 py-6">
                                 <div class="flex justify-center gap-2">
                                     <button onclick="editCategory({{ $category->id }}, '{{ $category->name }}')" class="p-2 bg-amber-50 text-amber-600 rounded-xl hover:bg-amber-600 hover:text-white transition">
@@ -69,7 +84,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="text-center py-10 text-slate-400">Belum ada kategori.</td>
+                            <td colspan="7" class="text-center py-10 text-slate-400">Belum ada kategori.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -78,7 +93,7 @@
 
             @if($categories->hasPages())
             <div class="p-8 border-t bg-slate-50">
-                {{ $categories->links() }}
+                {{ $categories->appends(['search' => request('search')])->links() }}
             </div>
             @endif
         </div>
@@ -110,7 +125,7 @@
         const form = document.getElementById('editForm');
         const input = document.getElementById('editName');
         
-        form.action = `/admin/categories/${id}`;
+        form.action = "{{ route('admin.categories.index') }}/" + id;
         input.value = name;
         modal.classList.remove('hidden');
     }
@@ -119,4 +134,5 @@
         document.getElementById('editModal').classList.add('hidden');
     }
 </script>
+
 @endsection

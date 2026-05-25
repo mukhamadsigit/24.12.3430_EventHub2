@@ -20,7 +20,7 @@
 
     <main class="max-w-3xl mx-auto px-6 py-20">
         <div class="mb-12">
-            <a href="event-detail.html" class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
+            <a href="{{ route('event.detail', $event->id) }}" class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
@@ -35,25 +35,34 @@
             <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
                 <h3 class="text-xl font-bold mb-6 border-b pb-4">Pesanan Anda</h3>
                 <div class="flex gap-6 items-start">
-                                        <img src="{{ asset('assets/concert.png') }}" alt="Event" class="w-24 h-24 rounded-2xl object-cover">
+                    @php
+                        $defaultImage = 'assets/concert.png';
+                        $catName = strtolower($event->category->name ?? 'uncategorized');
+                        if (str_contains($catName, 'it') || str_contains($catName, 'teknologi') || str_contains($catName, 'design')) {
+                            $defaultImage = 'assets/hackathon.png';
+                        } elseif (str_contains($catName, 'seminar') || str_contains($catName, 'workshop')) {
+                            $defaultImage = 'assets/workshop.png';
+                        }
+                    @endphp
+                    <img src="{{ $event->poster_path ? (str_starts_with($event->poster_path, 'assets/') ? asset($event->poster_path) : Storage::url($event->poster_path)) : asset($defaultImage) }}" alt="{{ $event->title }}" class="w-24 h-24 rounded-2xl object-cover">
                     <div>
-                        <h4 class="font-extrabold text-lg">Jazz Night 2024: A Celebration</h4>
-                        <p class="text-slate-500">16 Nov 2024 • The Blue Note Lounge</p>
-                        <p class="text-indigo-600 font-bold mt-2">1 x Rp 150.000</p>
+                        <h4 class="font-extrabold text-lg">{{ $event->title }}</h4>
+                        <p class="text-slate-500">{{ \Carbon\Carbon::parse($event->date)->format('d M Y') }} • {{ $event->location }}</p>
+                        <p class="text-indigo-600 font-bold mt-2">1 x Rp {{ number_format($event->price, 0, ',', '.') }}</p>
                     </div>
                 </div>
                 <div class="mt-8 pt-6 border-t space-y-3">
                     <div class="flex justify-between text-slate-500">
                         <span>Harga Tiket</span>
-                        <span>Rp 150.000</span>
+                        <span>Rp {{ number_format($event->price, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between text-slate-500">
                         <span>Biaya Layanan</span>
-                        <span>Rp 5.000</span>
+                        <span>Rp {{ number_format($event->price == 0 ? 0 : 5000, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between text-2xl font-black mt-4 pt-4 border-t">
                         <span>Total Bayar</span>
-                        <span class="text-indigo-600">Rp 155.000</span>
+                        <span class="text-indigo-600">Rp {{ number_format($event->price == 0 ? 0 : ($event->price + 5000), 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
@@ -109,18 +118,18 @@
                                 <span class="font-black text-indigo-600 tracking-tighter text-xl italic">MIDTRANS</span>
                 <button onclick="hideMidtrans()" class="p-2 hover:bg-slate-200 rounded-full">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                         </path>
                     </svg>
                 </button>
             </div>
             <div class="p-8 text-center">
                 <p class="text-slate-500 font-medium">Total Tagihan</p>
-                <h2 class="text-3xl font-black text-indigo-700 my-2">Rp 155.000</h2>
-                <p class="text-xs text-slate-400">Order ID #TRX-99210</p>
+                <h2 class="text-3xl font-black text-indigo-700 my-2">Rp {{ number_format($event->price == 0 ? 0 : ($event->price + 5000), 0, ',', '.') }}</h2>
+                <p class="text-xs text-slate-400">Order ID #TRX-{{ rand(10000, 99999) }}</p>
 
                 <div class="mt-8 space-y-4">
-                    <button onclick="window.location.href='ticket.html'"
+                    <button onclick="window.location.href='{{ route('tickets.index') }}'"
                         class="w-full py-4 border-2 border-indigo-100 rounded-2xl flex justify-between items-center px-6 hover:border-indigo-600 transition group">
                         <span class="font-bold group-hover:text-indigo-600">GoPay / QRIS</span>
                         <span class="text-indigo-400">→</span>

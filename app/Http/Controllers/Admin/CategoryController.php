@@ -8,10 +8,18 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::latest()->paginate(10);
-        return view('admin.categories.index', compact('categories'));
+        $search = $request->query('search');
+        $query = Category::query();
+
+        if ($search) {
+            $query->where('name', 'LIKE', "%{$search}%");
+        }
+
+        $categories = $query->latest()->paginate(10);
+
+        return view('admin.categories.index', compact('categories', 'search'));
     }
 
     public function store(Request $request)

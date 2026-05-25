@@ -11,10 +11,18 @@ class EventController extends Controller
     {
         return view('event-detail', compact('event'));
     }
-    public function checkout()
+    public function checkout(Request $request)
     {
-        return view('checkout');
+        $event = null;
+        if ($request->has('event_id')) {
+            $event = Event::find($request->event_id);
+        }
+        if (!$event) {
+            $event = Event::first();
+        }
+        return view('checkout', compact('event'));
     }
+
     
 }
 
