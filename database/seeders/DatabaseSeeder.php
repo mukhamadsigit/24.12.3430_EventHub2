@@ -20,6 +20,15 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        \App\Models\User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin Utama',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+            ]
+        );
+
         // 2. Insert Kategori Event
         $category = \App\Models\Category::create([
             'name' => 'Seminar IT',

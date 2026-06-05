@@ -50,7 +50,12 @@
             <a href="{{ route('tentang') }}" class="hover:text-indigo-600 transition">Tentang Kami</a>
             <a href="{{ route('kontak') }}" class="{{ request()->routeIs('kontak') ? 'text-indigo-600' : 'hover:text-indigo-600 transition' }}">Kontak</a>
         </div>
-        <div class="flex gap-3">
+        <div class="flex gap-3 items-center">
+             @auth
+                 @if(auth()->user()->role === 'admin')
+                     <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 hover:scale-105 active:scale-95 transition duration-200 text-sm">Dashboard Admin</a>
+                 @endif
+             @endauth
              <a href="{{ route('profil') }}" class="px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-200 transition">Profil</a>
         </div>
     </nav>

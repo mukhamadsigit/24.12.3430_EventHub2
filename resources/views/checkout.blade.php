@@ -71,11 +71,13 @@
             <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
                 <h3 class="text-xl font-bold mb-6 italic text-indigo-600 underline underline-offset-8">📦 Data Pemesan
                     (Tanpa Login)</h3>
-                <form class="space-y-6">
+                <form id="checkoutForm" class="space-y-6">
+                    @csrf
+                    <input type="hidden" name="event_id" value="{{ $event->id }}">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nama
                             Lengkap</label>
-                        <input type="text" placeholder="Masukkan nama sesuai identitas"
+                        <input type="text" name="customer_name" id="customer_name" placeholder="Masukkan nama sesuai identitas"
                             class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
                             required>
                     </div>
@@ -83,7 +85,7 @@
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Email
                                 Aktif</label>
-                            <input type="email" placeholder="contoh@gmail.com"
+                            <input type="email" name="customer_email" id="customer_email" placeholder="contoh@gmail.com"
                                 class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
                                 required>
                             <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">*E-Ticket
@@ -92,13 +94,13 @@
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">No.
                                 WhatsApp</label>
-                            <input type="tel" placeholder="08xxxxxxx"
+                            <input type="tel" name="customer_phone" id="customer_phone" placeholder="08xxxxxxx"
                                 class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
                                 required>
                         </div>
                     </div>
 
-                    <button type="button" onclick="showMidtrans()"
+                    <button type="submit"
                         class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black text-xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all">
                         Bayar Sekarang
                     </button>
@@ -115,7 +117,7 @@
         class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">
         <div class="bg-white w-full max-w-sm rounded-[2rem] overflow-hidden shadow-2xl animate-bounce-in">
             <div class="bg-slate-50 p-6 flex justify-between items-center border-b">
-                                <span class="font-black text-indigo-600 tracking-tighter text-xl italic">MIDTRANS</span>
+                <span class="font-black text-indigo-600 tracking-tighter text-xl italic">MIDTRANS</span>
                 <button onclick="hideMidtrans()" class="p-2 hover:bg-slate-200 rounded-full">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -126,10 +128,10 @@
             <div class="p-8 text-center">
                 <p class="text-slate-500 font-medium">Total Tagihan</p>
                 <h2 class="text-3xl font-black text-indigo-700 my-2">Rp {{ number_format($event->price == 0 ? 0 : ($event->price + 5000), 0, ',', '.') }}</h2>
-                <p class="text-xs text-slate-400">Order ID #TRX-{{ rand(10000, 99999) }}</p>
+                <p id="midtrans-order-id" class="text-xs text-slate-400">Order ID #TRX-{{ rand(10000, 99999) }}</p>
 
                 <div class="mt-8 space-y-4">
-                    <button onclick="window.location.href='{{ route('tickets.index') }}'"
+                    <button onclick="redirectToTicket()"
                         class="w-full py-4 border-2 border-indigo-100 rounded-2xl flex justify-between items-center px-6 hover:border-indigo-600 transition group">
                         <span class="font-bold group-hover:text-indigo-600">GoPay / QRIS</span>
                         <span class="text-indigo-400">→</span>
@@ -160,6 +162,41 @@
     </div>
 
     <script>
+        let createdTransactionId = null;
+
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch("{{ route('checkout.store') }}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("HTTP error " + res.status);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    createdTransactionId = data.transaction.id;
+                    document.getElementById('midtrans-order-id').innerText = 'Order ID #' + data.transaction.order_id;
+                    showMidtrans();
+                } else {
+                    alert("Gagal melakukan checkout, silakan periksa data Anda.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Gagal melakukan checkout, silakan periksa data Anda.");
+            });
+        });
+
         function showMidtrans() {
             document.getElementById('midtrans-overlay').classList.remove('hidden');
             document.getElementById('midtrans-overlay').classList.add('flex');
@@ -168,7 +205,13 @@
             document.getElementById('midtrans-overlay').classList.add('hidden');
             document.getElementById('midtrans-overlay').classList.remove('flex');
         }
-
+        function redirectToTicket() {
+            if (createdTransactionId) {
+                window.location.href = "{{ route('tickets.index') }}?id=" + createdTransactionId;
+            } else {
+                window.location.href = "{{ route('tickets.index') }}";
+            }
+        }
     </script>
 
     <style>
