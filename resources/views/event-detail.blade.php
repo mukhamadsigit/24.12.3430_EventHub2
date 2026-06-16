@@ -14,8 +14,9 @@
                     $defaultImage = 'assets/workshop.png';
                 }
             @endphp
-            <img src="{{ $event->poster_path ? (str_starts_with($event->poster_path, 'assets/') ? asset($event->poster_path) : Storage::url($event->poster_path)) : asset($defaultImage) }}" alt="{{ $event->title }}"
-                class="w-full rounded-[2.5rem] shadow-2xl border-8 border-white">
+            <img src="{{ ($event->poster_path && Storage::disk('public')->exists($event->poster_path))
+             ? asset('storage/' . $event->poster_path)
+             : 'https://placehold.co/200x600' }}" alt="{{ $event->title }}" class="w-full rounded-[2.5rem] shadow-2xl border-8 border-white object-cover aspect-[3/4]">
             <div class="mt-8 p-6 bg-white rounded-3xl border border-slate-100 shadow-sm">
                 <h4 class="font-bold mb-4">Penyelenggara</h4>
                 <div class="flex items-center gap-4">
@@ -34,7 +35,7 @@
     <!-- Right: Details -->
     <div class="lg:col-span-2 space-y-12">
         <div class="space-y-4">
-            <span class="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold uppercase tracking-wider">{{ $event->category->name ?? 'Uncategorized' }}</span>
+            <span class="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold uppercase tracking-wider">{{ $event->category->name }}</span>
             <h1 class="text-4xl md:text-5xl font-black leading-tight">{{ $event->title }}</h1>
             <div class="flex flex-wrap gap-6 text-slate-500 font-medium">
                 <div class="flex items-center gap-2">
@@ -43,7 +44,7 @@
                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                         </path>
                     </svg>
-                    <span>{{ \Carbon\Carbon::parse($event->date)->format('l, d M Y') }}</span>
+                    <span>{{ \Carbon\Carbon::parse($event->date)->format('d M Y, H:i') }}</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,7 +87,7 @@
                     </p>
                 </div>
                 <div>
-                    <a href="{{ route('checkout', ['event_id' => $event->id]) }}"
+                    <a href="{{url('checkout/'.$event->id)}}"
                         class="inline-block px-10 py-5 bg-white text-indigo-600 rounded-2xl font-black text-xl hover:scale-105 transition-transform shadow-xl">
                         Pesan Sekarang
                     </a>

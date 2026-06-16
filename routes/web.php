@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 // Import Controllers (Public)
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\EventController as PublicEventController; // Menggunakan Alias
 
@@ -13,6 +12,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\EventController as AdminEventController; // Menggunakan Alias
 
 // ==========================================
@@ -42,7 +42,7 @@ Route::get('/bantuan', function() {
 // RUTE EVENT & TICKET
 // ==========================================
 // Memanggil alias PublicEventController agar kodenya lebih bersih
-Route::get('/event/{event}', [PublicEventController::class, 'show'])->name('event.detail');
+Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
 Route::get('/checkout', [PublicEventController::class, 'checkout'])->name('checkout');
 Route::post('/checkout', [PublicEventController::class, 'storeTransaction'])->name('checkout.store');
 Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');

@@ -139,5 +139,7 @@ class DatabaseSeeder extends Seeder
                 'poster_path' => 'assets/workshop.png'
             ],
         ]);
+
+        $this->call(PartnerSeeder::class);
     }
 }

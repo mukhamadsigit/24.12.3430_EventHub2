@@ -44,20 +44,14 @@
             </div>
 
             <div class="space-y-6">
-                <div>
-                    <label class="block mb-2 font-bold text-slate-700">Poster Event</label>
-                    <div class="flex items-center gap-4 mb-2">
-                        @if($event->poster_path)
+                <div class="mb-6">
+                    <label class="block mb-2 font-medium text-gray-700">Poster Event (Opsional)</label>
+                    @if($event->poster_path)
+                        <div class="mb-3">
                             <img src="{{ Storage::url($event->poster_path) }}" class="w-20 h-20 object-cover rounded-xl border">
-                        @endif
-                        <div class="flex-1 border-2 border-dashed border-slate-200 rounded-2xl p-4 text-center hover:border-indigo-500 transition cursor-pointer relative group">
-                            <input type="file" name="poster" class="absolute inset-0 opacity-0 cursor-pointer">
-                            <div class="space-y-1">
-                                <p class="text-xs text-slate-500 font-bold">Ganti Poster</p>
-                                <p class="text-[10px] text-slate-400">Max. 2MB</p>
-                            </div>
                         </div>
-                    </div>
+                    @endif
+                    <input type="file" name="poster" accept="image/*" class="w-full border border-gray-300 p-2.5 rounded">
                     @error('poster')
                         <p class="text-rose-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
