@@ -43,7 +43,12 @@ Route::get('/bantuan', function() {
 // ==========================================
 // Memanggil alias PublicEventController agar kodenya lebih bersih
 Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
-Route::get('/checkout', [PublicEventController::class, 'checkout'])->name('checkout');
+
+// 👇 PERUBAHAN ADA DI SINI 👇
+// Menambahkan parameter {id} agar rute bisa membaca /checkout/2
+Route::get('/checkout/{id}', [PublicEventController::class, 'checkout'])->name('checkout');
+// 👆 ---------------------- 👆
+
 Route::post('/checkout', [PublicEventController::class, 'storeTransaction'])->name('checkout.store');
 Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
 
