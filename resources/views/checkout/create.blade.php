@@ -4,7 +4,7 @@
 <main class="max-w-3xl mx-auto px-6 py-20">
     <div class="mb-12">
         <a href="{{ route('events.show', $event->id) }}"
-            class="text-indigo-600 font-bold flex items-center gap-2 mb6">
+            class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
             <svg class="w-4 h-4" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -34,10 +34,8 @@ Storage::disk('public')->exists($event->poster_path))
  : 'https://placehold.co/200x200' }}"
                     alt="Event" class="w-24 h-24 rounded-2xl objectcover">
                 <div>
-                    <h4 class="font-extrabold text-lg">{{ $event-
->title }}</h4>
-                    <p class="text-slate-500">{{ $event->date-
->format('d M Y') }} • {{ $event->location }}</p>
+                    <h4 class="font-extrabold text-lg">{{ $event->title }}</h4>
+                    <p class="text-slate-500">{{ $event->date->format('d M Y') }} • {{ $event->location }}</p>
                     <p class="text-indigo-600 font-bold mt-2">1 x Rp
                         {{ number_format($event->price, 0, ',', '.') }}
                     </p>
@@ -71,37 +69,31 @@ underline underline-offset-8">📦 Data Pemesan
                 method="POST" class="space-y-6">
                 @csrf
                 <div>
-                    <label class="block text-sm font-bold textslate-700 mb-2 uppercase tracking-wide">Nama
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nama
                         Lengkap</label>
                     <input type="text" name="customer_name"
                         placeholder="Masukkan nama sesuai identitas"
-                        class="w-full px-5 py-4 bg-white border-2
-border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo500/10 focus:border-indigo-600 outline-none transition fontmedium"
+                        class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
                         required value="{{ old('customer_name') }}">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-bold textslate-700 mb-2 uppercase tracking-wide">Email
+                        <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Email
                             Aktif</label>
                         <input type="email" name="customer_email"
                             placeholder="contoh@gmail.com"
-                            class="w-fullpx-5 py-4 bg-white border2 border-slate-100 rounded-2xl focus:ring-4 focus:ringindigo-500/10 focus:border-indigo-600 outline-none
-transition font-medium"
-                            required value="{{ old('customer_email')
-}}">
-                        <p class="text-[10px] text-slate-400 mt-2
-font-bold uppercase tracking-tighter">*E-Ticket
+                            class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
+                            required value="{{ old('customer_email') }}">
+                        <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">*E-Ticket
                             akan dikirim ke email ini</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold textslate-700 mb-2 uppercase tracking-wide">No.
-                            WhatsApp</label
-                            <input type="tel" name="customer_phone"
+                        <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">No.
+                            WhatsApp</label>
+                        <input type="tel" name="customer_phone"
                             placeholder="08xxxxxxx"
-                            class="w-full px-5 py-4 bg-white border2 border-slate-100 rounded-2xl focus:ring-4 focus:ringindigo-500/10 focus:border-indigo-600 outline-none
-transition font-medium"
-                            required value="{{ old('customer_phone')
-}}">
+                            class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
+                            required value="{{ old('customer_phone') }}">
                     </div>
                 </div>
                 <button type="submit"

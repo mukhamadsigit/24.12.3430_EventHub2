@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\EventController as PublicEventController; // Menggunakan Alias
+use App\Http\Controllers\CheckoutController;
 
 // Import Controllers (Admin)
 use App\Http\Controllers\Admin\AuthController;
@@ -44,12 +45,12 @@ Route::get('/bantuan', function() {
 // Memanggil alias PublicEventController agar kodenya lebih bersih
 Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
 
-// 👇 PERUBAHAN ADA DI SINI 👇
-// Menambahkan parameter {id} agar rute bisa membaca /checkout/2
-Route::get('/checkout/{id}', [PublicEventController::class, 'checkout'])->name('checkout');
-// 👆 ---------------------- 👆
+// Checkout & Payment Routes (Midtrans)
+Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout');
+Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
 
-Route::post('/checkout', [PublicEventController::class, 'storeTransaction'])->name('checkout.store');
 Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
 
 // ==========================================
