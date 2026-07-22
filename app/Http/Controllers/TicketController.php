@@ -11,7 +11,8 @@ class TicketController extends Controller
     {
         $transaction = null;
         if ($request->has('id')) {
-            $transaction = Transaction::with('event')->find($request->id);
+            $transaction = Transaction::with('event')->find($request->id)
+                ?? Transaction::with('event')->where('order_id', $request->id)->first();
         }
         return view('ticket', compact('transaction'));
     }

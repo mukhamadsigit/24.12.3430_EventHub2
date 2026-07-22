@@ -50,6 +50,7 @@ Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('ch
 Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::post('/midtrans/callback', [\App\Http\Controllers\MidtransWebhookController::class, 'handle'])->name('midtrans.callback');
 
 Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
 
@@ -79,6 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         // Rute Transaksi
         Route::get('transaction', [TransactionController::class, 'index'])->name('transaction.index');
+        Route::get('transactions', [TransactionController::class, 'index'])->name('transactions.index');
         
     });
     Route::post('/midtrans/callback',

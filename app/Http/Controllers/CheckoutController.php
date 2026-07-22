@@ -3,8 +3,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Transaction;
+use App\Mail\EventTicketMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -43,12 +46,20 @@ class CheckoutController extends Controller
         if ($event->price == 0) {
             $transaction->update(['status' => 'success']);
             $event->decrement('stock');
+
+            try {
+                Mail::to($transaction->customer_email)->send(new EventTicketMail($transaction));
+                Log::info('E-Ticket email sent for free event to: ' . $transaction->customer_email);
+            } catch (\Exception $e) {
+                Log::error('Gagal mengirim email E-Ticket gratis: ' . $e->getMessage());
+            }
+
             return redirect()->route('checkout.success', $transaction->order_id);
         }
 
         // --- INTEGRASI SNAP MIDTRANS ---
         // Konfigurasi Kredensial Environment Midtrans
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$serverKey = config('services.midtrans.server_key') ?? config('midtrans.server_key') ?? env('MIDTRANS_SERVER_KEY');
         \Midtrans\Config::$isProduction = false; // Mode Sandbox!
         \Midtrans\Config::$isSanitized = true;
         \Midtrans\Config::$is3ds = true;
@@ -80,7 +91,7 @@ class CheckoutController extends Controller
         }
     }
 
-    public function payment($order_id)
+    public function payment(string $order_id)
     {
         // Mengambil daftar kategori untuk keperluan menu footer
         $categories = \App\Models\Category::all();
@@ -88,14 +99,14 @@ class CheckoutController extends Controller
         return view('checkout.payment', compact('transaction','categories'));
     }
 
-    public function success($order_id)
+    public function success(string $order_id)
     {
         // Mengambil daftar kategori untuk keperluan menu footer
         $categories = \App\Models\Category::all();
-        $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
+        $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
 
         // Validasi status pembayaran asli dari Midtrans (Mencegah manipulasi URL)
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$serverKey = config('services.midtrans.server_key') ?? config('midtrans.server_key') ?? env('MIDTRANS_SERVER_KEY');
         \Midtrans\Config::$isProduction = false;
 
         try {
@@ -103,7 +114,24 @@ class CheckoutController extends Controller
 
             // Hanya ubah status menjadi sukses jika Midtrans mengonfirmasi pembayaran lunas
             if (in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
-                $transaction->update(['status' => 'success']);
+                $isNewSuccess = strtolower($transaction->status) !== 'success' && strtolower($transaction->status) !== 'settlement';
+                
+                if ($isNewSuccess) {
+                    $transaction->update(['status' => 'success']);
+                    
+                    // Kurangi stok jika belum berkurang via webhook
+                    if ($transaction->event && $transaction->event->stock > 0) {
+                        $transaction->event->decrement('stock');
+                    }
+
+                    // Kirim E-Ticket email
+                    try {
+                        Mail::to($transaction->customer_email)->send(new EventTicketMail($transaction));
+                        Log::info('E-Ticket email sent on success page to: ' . $transaction->customer_email);
+                    } catch (\Exception $e) {
+                        Log::error('Gagal mengirim email E-Ticket pada success page: ' . $e->getMessage());
+                    }
+                }
             }
         } catch (\Exception $e) {
             // Jika error (transaksi tidak ada di Midtrans, koneksi terputus), kembalikan ke beranda

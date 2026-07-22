@@ -66,7 +66,7 @@
     <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-10">
         <div class="p-8 border-b flex justify-between items-center">
             <h3 class="font-black text-xl">Transaksi Terakhir</h3>
-            <a href="{{ route('admin.transactions.index') }}" class="text-indigo-600 font-bold hover:underline">
+            <a href="{{ route('admin.transaction.index') }}" class="text-indigo-600 font-bold hover:underline">
                 Lihat Semua
             </a>
         </div>
