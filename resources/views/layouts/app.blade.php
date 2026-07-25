@@ -55,8 +55,14 @@
                  @if(auth()->user()->role === 'admin')
                      <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 hover:scale-105 active:scale-95 transition duration-200 text-sm">Dashboard Admin</a>
                  @endif
+                 <form action="{{ route('logout') }}" method="POST" class="inline">
+                     @csrf
+                     <button type="submit" class="px-5 py-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl font-bold hover:bg-rose-600 hover:text-white transition duration-200 text-sm">Logout</button>
+                 </form>
+             @else
+                 <a href="{{ route('login') }}" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 hover:scale-105 active:scale-95 transition duration-200 text-sm">Login</a>
              @endauth
-             <a href="{{ route('profil') }}" class="px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-200 transition">Profil</a>
+             <a href="{{ route('profil') }}" class="px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-200 transition text-sm">Profil</a>
         </div>
     </nav>
 

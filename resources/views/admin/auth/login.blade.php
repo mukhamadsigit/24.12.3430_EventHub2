@@ -33,7 +33,7 @@
         }
     </style>
 </head>
-<body class="bg-[#0f111a] min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+<body class="bg-[#0f111a] min-h-screen flex items-center justify-center py-12 px-4 relative overflow-x-hidden">
 
     <!-- Decorative background elements -->
     <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-indigo-600/20 rounded-full filter blur-[120px] animate-blob"></div>
@@ -53,6 +53,16 @@
 
         <!-- Glassmorphic Login Card -->
         <div class="glass rounded-[2rem] p-8 shadow-2xl">
+            
+            <!-- Login Type Selector Tabs -->
+            <div class="flex bg-white/5 p-1.5 rounded-2xl mb-6 border border-white/5">
+                <a href="{{ route('login') }}" class="flex-1 text-center py-2.5 rounded-xl text-xs font-bold text-indigo-200/50 hover:text-white transition duration-200">
+                    Masuk Sebagai User
+                </a>
+                <a href="{{ route('admin.login') }}" class="flex-1 text-center py-2.5 rounded-xl text-xs font-bold transition duration-200 bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+                    Masuk Sebagai Admin
+                </a>
+            </div>
             
             <form action="{{ route('admin.login.post') }}" method="POST" class="space-y-6">
                 @csrf
