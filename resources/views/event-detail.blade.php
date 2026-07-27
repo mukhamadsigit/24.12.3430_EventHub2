@@ -102,33 +102,6 @@
             </div>
         </div>
 
-        @if($event->isCompleted())
-        <div class="bg-slate-800 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl shadow-slate-100 relative overflow-hidden">
-            <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-                <div>
-                    <p class="text-slate-300 font-bold uppercase tracking-widest text-sm mb-2">Status Event</p>
-                    <h2 class="text-4xl font-black">
-                        Event Telah Selesai
-                    </h2>
-                    <p class="mt-4 text-slate-300 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Dilaksanakan pada: <span class="font-bold underline">{{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}</span>
-                    </p>
-                </div>
-                <div>
-                    <a href="#starContainer"
-                        class="inline-block px-10 py-5 bg-amber-500 text-white rounded-2xl font-black text-xl hover:scale-105 transition-transform shadow-xl">
-                        ★ Beri / Lihat Rating
-                    </a>
-                </div>
-            </div>
-            <!-- Decoration -->
-            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-white opacity-5 rounded-full"></div>
-            <div class="absolute -left-10 -top-10 w-32 h-32 bg-slate-600 opacity-10 rounded-full"></div>
-        </div>
-        @else
         <div class="bg-indigo-600 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl shadow-indigo-200 relative overflow-hidden">
             <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
                 <div>
@@ -160,7 +133,6 @@
             <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-white opacity-10 rounded-full"></div>
             <div class="absolute -left-10 -top-10 w-32 h-32 bg-indigo-400 opacity-20 rounded-full"></div>
         </div>
-        @endif
 
         <!-- ======================================================== -->
         <!-- SISTEM ULASAN DAN PENILAIAN BINTANG (RATING & REVIEW)    -->

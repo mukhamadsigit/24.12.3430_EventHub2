@@ -65,15 +65,9 @@
                                 Rp {{ number_format($event->price, 0, ',', '.') }}
                             @endif
                         </span>
-                        @if($event->isCompleted())
-                            <a href="{{ route('events.show', $event->id) }}" class="px-5 py-2.5 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600 transition flex items-center gap-1 shadow-md text-xs">
-                                <span>★</span> Rating Acara
-                            </a>
-                        @else
-                            <a href="{{ route('events.show', $event->id) }}" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition text-xs shadow-md shadow-indigo-100">
-                                Pesan Tiket &rarr;
-                            </a>
-                        @endif
+                        <a href="{{ route('events.show', $event->id) }}" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition text-xs shadow-md shadow-indigo-100">
+                            Pesan Tiket &rarr;
+                        </a>
                     </div>
                 </div>
             </div>
