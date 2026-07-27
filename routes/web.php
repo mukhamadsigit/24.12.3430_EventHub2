@@ -123,10 +123,20 @@ Route::get('/clear-config', function() {
 
 Route::get('/link-storage', function () {
     $targetFolder = storage_path('app/public');
-    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
-    if (!file_exists($linkFolder)) {
-        symlink($targetFolder, $linkFolder);
-        return 'Storage link berhasil dibuat secara manual!';
+    $linkFolder = public_path('storage');
+    
+    // Hapus jika berupa file/link rusak agar bisa diganti link baru yang valid
+    if (is_link($linkFolder) || is_file($linkFolder)) {
+        @unlink($linkFolder);
+    } elseif (is_dir($linkFolder)) {
+        // Jika berupa folder (biasanya akibat salah upload folder storage dari local PC)
+        @rename($linkFolder, $linkFolder . '_backup_' . time());
     }
-    return 'Storage link sudah ada.';
+    
+    // Buat symbolic link baru
+    if (@symlink($targetFolder, $linkFolder)) {
+        return 'Storage link berhasil dibuat secara bersih di hosting!';
+    }
+    
+    return 'Gagal membuat storage link. Silakan hapus folder "public/storage" secara manual lewat File Manager terlebih dahulu.';
 });
