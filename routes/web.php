@@ -72,13 +72,15 @@ Route::post('/events/{event}/reviews', [ReviewController::class, 'store'])->name
 Route::get('/partners/{partner}', [PartnerProfileController::class, 'show'])->name('partners.show');
 
 // Checkout & Payment Routes (Midtrans)
-Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout');
-Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
-Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
-Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle'])->name('midtrans.callback');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout');
+    Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+    Route::get('/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+});
 
-Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+Route::post('/midtrans/callback', [MidtransWebhookController::class, 'handle'])->name('midtrans.callback');
 
 
 // ==========================================
