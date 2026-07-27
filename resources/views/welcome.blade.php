@@ -141,8 +141,8 @@
                                 <span>★</span> Beri / Lihat Rating
                             </a>
                         @else
-                            <a href="{{ route('events.show', $event->id) }}" class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition text-xs">
-                                Lihat Detail
+                            <a href="{{ route('events.show', $event->id) }}" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition text-xs shadow-md shadow-indigo-100">
+                                Pesan Tiket &rarr;
                             </a>
                         @endif
                     </div>
