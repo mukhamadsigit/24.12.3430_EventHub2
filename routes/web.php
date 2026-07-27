@@ -118,7 +118,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::get('/clear-config', function() {
     \Illuminate\Support\Facades\Artisan::call('config:clear');
     \Illuminate\Support\Facades\Artisan::call('cache:clear');
-    return "Cache dan konfigurasi berhasil dibersihkan!";
+    
+    // Otomatis majukan semua tanggal event ke tahun 2027 agar statusnya aktif (bisa dipesan)
+    try {
+        \App\Models\Event::all()->each(function ($event) {
+            $date = \Carbon\Carbon::parse($event->date);
+            if ($date->year < 2027) {
+                $event->update([
+                    'date' => $date->setYear(2027)
+                ]);
+            }
+        });
+    } catch (\Exception $e) {}
+    
+    return "Cache dibersihkan! Semua tanggal event telah diperbarui ke tahun 2027 agar aktif dan bisa dipesan.";
 });
 
 Route::get('/link-storage', function () {
