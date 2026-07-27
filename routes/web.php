@@ -111,3 +111,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
     });
 });
+
+// ==========================================
+// RUTE HELPER PEMELIHARAAN HOSTING (Bisa Dihapus Nanti)
+// ==========================================
+Route::get('/clear-config', function() {
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    return "Cache dan konfigurasi berhasil dibersihkan!";
+});
+
+Route::get('/link-storage', function () {
+    $targetFolder = storage_path('app/public');
+    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
+    if (!file_exists($linkFolder)) {
+        symlink($targetFolder, $linkFolder);
+        return 'Storage link berhasil dibuat secara manual!';
+    }
+    return 'Storage link sudah ada.';
+});
