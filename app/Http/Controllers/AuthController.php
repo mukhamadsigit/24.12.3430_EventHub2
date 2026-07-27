@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // Wajib ditambahkan agar Auth bisa berjalan
 
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
 class AuthController extends Controller
 {
     // Menampilkan halaman form login
@@ -21,6 +24,15 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
+
+        // Auto-fix password jika tersimpan sebagai plain text di DB
+        $user = User::where('email', $request->email)->first();
+        if ($user && !str_starts_with($user->password, '$2y$') && !str_starts_with($user->password, '$2a$') && !str_starts_with($user->password, '$2b$')) {
+            if ($user->password === $request->password || $user->password === md5($request->password)) {
+                $user->password = Hash::make($request->password);
+                $user->save();
+            }
+        }
 
         // 2. Cek kecocokan email dan password di database
         if (Auth::attempt($credentials)) {

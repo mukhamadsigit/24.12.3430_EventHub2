@@ -12,7 +12,14 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::with('category')->latest()->paginate(10);
+        $user = auth()->user();
+        $query = Event::with('category');
+
+        if ($user->role === 'organizer') {
+            $query->where('organizer_id', $user->id);
+        }
+
+        $events = $query->latest()->paginate(10);
         return view('admin.events.index', compact('events'));
     }
 
@@ -41,6 +48,9 @@ class EventController extends Controller
             $data['poster_path'] = $request->file('poster')->store('posters', 'public');
         }
 
+        // Set the organizer_id to current logged in user
+        $data['organizer_id'] = auth()->id();
+
         // Menyimpan data yang telah divalidasi ke dalam tabel menggunakan Model
         \App\Models\Event::create($data);
 
@@ -49,12 +59,22 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
+        $user = auth()->user();
+        if ($user->role === 'organizer' && $event->organizer_id !== $user->id) {
+            abort(403, 'Akses ditolak. Anda hanya dapat mengedit event Anda sendiri.');
+        }
+
         $categories = Category::all();
         return view('admin.events.edit', compact('event', 'categories'));
     }
 
     public function update(Request $request, Event $event)
     {
+        $user = auth()->user();
+        if ($user->role === 'organizer' && $event->organizer_id !== $user->id) {
+            abort(403, 'Akses ditolak. Anda hanya dapat memperbarui event Anda sendiri.');
+        }
+
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
@@ -82,6 +102,11 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
+        $user = auth()->user();
+        if ($user->role === 'organizer' && $event->organizer_id !== $user->id) {
+            abort(403, 'Akses ditolak. Anda hanya dapat menghapus event Anda sendiri.');
+        }
+
         if ($event->poster_path) {
             Storage::disk('public')->delete($event->poster_path);
         }

@@ -14,8 +14,16 @@ class EventController extends Controller
         // Mengambil daftar kategori untuk keperluan menu footer
         $categories = \App\Models\Category::all();
 
+        // Ambil ulasan dari user yang sedang login untuk event ini
+        $myReview = null;
+        if (auth()->check()) {
+            $myReview = \App\Models\Review::where('user_id', auth()->id())
+                ->where('event_id', $event->id)
+                ->first();
+        }
+
         // Me-render view dengan membawa data kategori dan data spesifik acara tersebut
-        return view('event-detail', compact('categories', 'event'));
+        return view('event-detail', compact('categories', 'event', 'myReview'));
     }
 
     public function checkout(Request $request)

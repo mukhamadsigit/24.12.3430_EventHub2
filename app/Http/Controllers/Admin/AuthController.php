@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
 class AuthController extends Controller
 {
     // 1. Fungsi menampilkan halaman Login
@@ -21,6 +24,15 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
+
+        // Cek jika password di database tersimpan plain text / non-bcrypt (misal input manual di phpMyAdmin)
+        $user = User::where('email', $request->email)->first();
+        if ($user && !str_starts_with($user->password, '$2y$') && !str_starts_with($user->password, '$2a$') && !str_starts_with($user->password, '$2b$')) {
+            if ($user->password === $request->password || $user->password === md5($request->password)) {
+                $user->password = Hash::make($request->password);
+                $user->save();
+            }
+        }
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();

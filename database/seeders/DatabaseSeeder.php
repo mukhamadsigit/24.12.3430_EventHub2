@@ -29,20 +29,33 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // Akun Penyelenggara (Organizer) untuk Pengujian
+        $organizer = \App\Models\User::updateOrCreate(
+            ['email' => 'organizer@gmail.com'],
+            [
+                'name' => 'Penyelenggara HIMA',
+                'password' => bcrypt('password'),
+                'role' => 'organizer',
+            ]
+        );
+
         // 2. Insert Kategori Event
-        $category = \App\Models\Category::create([
-            'name' => 'Seminar IT',
+        $category = \App\Models\Category::firstOrCreate([
             'slug' => 'seminar-it',
+        ], [
+            'name' => 'Seminar IT',
         ]);
 
         $category2 = \App\Models\Category::firstOrCreate([
-            'name' => 'Entertaiment',
             'slug' => 'entertaiment',
+        ], [
+            'name' => 'Entertaiment',
         ]);
 
         // 3. Insert Sampel Events )
         \App\Models\Event::create([
             'category_id' => $category2->id,
+            'organizer_id' => $organizer->id,
             'title' => 'Jazz Night 2025',
             'description' => 'Nikmati malam yang indah dengan alunan musik.',
             'date' => '2026-05-10 19:00:00',
@@ -54,6 +67,7 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\Event::create([
             'category_id' => $category->id,
+            'organizer_id' => $organizer->id,
             'title' => 'AI Summit & Expo 2026',
             'description' => 'Jelajahi tren terkini dalam bidang Artificial Intelligence',
             'date' => '2026-05-01 13:00:00',
@@ -64,11 +78,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 4. Tambahan Kategori (Dari Tugas) - SUDAH DITAMBAHKAN SLUG
-        DB::table('categories')->insert([
-            ['name' => 'Teknologi & Desain', 'slug' => 'teknologi-desain', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'Olahraga & E-Sport', 'slug' => 'olahraga-e-sport', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'Seminar & Karir', 'slug' => 'seminar-karir', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-        ]);
+        foreach ([
+            ['name' => 'Teknologi & Desain', 'slug' => 'teknologi-desain'],
+            ['name' => 'Olahraga & E-Sport', 'slug' => 'olahraga-e-sport'],
+            ['name' => 'Seminar & Karir', 'slug' => 'seminar-karir'],
+        ] as $cat) {
+            \App\Models\Category::firstOrCreate(['slug' => $cat['slug']], ['name' => $cat['name']]);
+        }
 
         // 5. Tambahan 6 Jenis Kegiatan (Dari Tugas)
         DB::table('events')->insert([

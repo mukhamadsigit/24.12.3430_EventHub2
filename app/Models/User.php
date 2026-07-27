@@ -44,4 +44,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function events()
+{
+    // Seorang penyelenggara bisa memiliki banyak acara
+    return $this->hasMany(Event::class, 'organizer_id');
+}
 }

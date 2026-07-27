@@ -59,10 +59,17 @@ Route::get('/bantuan', function() {
 })->name('bantuan');
 
 
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\PartnerProfileController;
+
 // ==========================================
-// RUTE EVENT & TICKET
+// RUTE EVENT & TICKET & REVIEWS
 // ==========================================
 Route::get('/events/{event}', [PublicEventController::class, 'show'])->name('events.show');
+Route::post('/events/{event}/reviews', [ReviewController::class, 'store'])->name('events.reviews.store')->middleware('auth');
+
+// Profil Penyelenggara / Partner
+Route::get('/partners/{partner}', [PartnerProfileController::class, 'show'])->name('partners.show');
 
 // Checkout & Payment Routes (Midtrans)
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout');
@@ -95,8 +102,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         // Rute Manajemen Data (Resources)
         Route::resource('events', AdminEventController::class);
-        Route::resource('categories', CategoryController::class);
-        Route::resource('partners', PartnerController::class)->except(['show']);
+        Route::resource('categories', CategoryController::class)->middleware('role:admin,superadmin');
+        Route::resource('partners', PartnerController::class)->except(['show'])->middleware('role:admin,superadmin');
         
         // Rute Transaksi
         Route::get('transaction', [TransactionController::class, 'index'])->name('transaction.index');

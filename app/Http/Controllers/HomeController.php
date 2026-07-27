@@ -14,9 +14,8 @@ class HomeController extends Controller
         // 1. Ambil semua jenis kategori untuk tampilan filter tab button
         $categories = Category::all();
 
-        // 2. Buat kueri dasar untuk mengambil event:
-        // - Gunakan Eager loading `category`
-        $query = Event::with('category')
+        // 2. Buat kueri dasar untuk mengambil event dengan relasi category & reviews
+        $query = Event::with(['category', 'reviews'])
             ->orderBy('date', 'asc');
 
         // 3. Filter query jika url memiliki parameter pencarian spesifik ?category=...
@@ -27,11 +26,18 @@ class HomeController extends Controller
             });
         }
 
-        // 4. Eksekusi query dan kirim data hasilnya ke template Blade
+        // 4. Eksekusi query
         $events = $query->get();
+        
+        // 5. Event yang sudah tuntas dilaksanakan (pasca-acara) untuk ditampilkan ulasan & rating bintangnya di halaman utama
+        $completedEvents = Event::with(['category', 'reviews.user'])
+            ->where('date', '<=', now())
+            ->orderBy('date', 'desc')
+            ->get();
+
         $partners = Partner::latest()->get();
 
-        return view('welcome', compact('events', 'categories', 'partners'));
+        return view('welcome', compact('events', 'categories', 'partners', 'completedEvents'));
     }
 
     public function katalog(Request $request)
