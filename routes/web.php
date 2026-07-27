@@ -122,21 +122,23 @@ Route::get('/clear-config', function() {
 });
 
 Route::get('/link-storage', function () {
-    $targetFolder = storage_path('app/public');
     $linkFolder = public_path('storage');
     
-    // Hapus jika berupa file/link rusak agar bisa diganti link baru yang valid
+    // Hapus public/storage (symlink/file/folder rusak) agar request diarahkan ke rute dinamis Laravel
     if (is_link($linkFolder) || is_file($linkFolder)) {
         @unlink($linkFolder);
     } elseif (is_dir($linkFolder)) {
-        // Jika berupa folder (biasanya akibat salah upload folder storage dari local PC)
         @rename($linkFolder, $linkFolder . '_backup_' . time());
     }
     
-    // Buat symbolic link baru
-    if (@symlink($targetFolder, $linkFolder)) {
-        return 'Storage link berhasil dibuat secara bersih di hosting!';
-    }
-    
-    return 'Gagal membuat storage link. Silakan hapus folder "public/storage" secara manual lewat File Manager terlebih dahulu.';
+    return 'Berhasil menghapus folder "public/storage" lama. Sekarang gambar dilayani secara dinamis oleh Laravel!';
 });
+
+// Rute Dinamis untuk Melayani File Storage tanpa Symlink (Bypass Aturan Hosting)
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    if (file_exists($filePath)) {
+        return response()->file($filePath);
+    }
+    abort(404);
+})->where('path', '.*');
